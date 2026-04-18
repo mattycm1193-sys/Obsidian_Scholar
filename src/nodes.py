@@ -1,7 +1,7 @@
 import os
 import json
 import re
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 import html2text
 from google import genai
@@ -9,8 +9,16 @@ from playwright.sync_api import sync_playwright
 
 from src.agent_state import ScholarState
 
-# Initialize the modern Gemini Client
-client = genai.Client()
+def get_gemini_client(state: ScholarState):
+    """
+    Initializes the Gemini client dynamically. 
+    Checks the UI state first, then falls back to the local .env file.
+    Prevents server crash if the .env file is empty.
+    """
+    api_key = state.get("api_key") or os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("Gemini API Key is missing. Please provide it in the UI or .env file.")
+    return genai.Client(api_key=api_key)
 
 def planner_node(state: ScholarState) -> ScholarState:
     """Analyzes the current page and extracts relevant links based on the research goal."""
@@ -32,7 +40,7 @@ def planner_node(state: ScholarState) -> ScholarState:
     
     prompt = f"""
     You are an autonomous research agent.
-    The user's goal is: "{state['research_goal']}"
+    The user's goal is: "{state.get('research_goal', 'Extract core content.')}"
     
     Here are the URLs found on the current page:
     {unique_links[:100]}
@@ -43,7 +51,7 @@ def planner_node(state: ScholarState) -> ScholarState:
     """
     
     try:
-        # Using the advanced custom tools preview model
+        client = get_gemini_client(state)
         response = client.models.generate_content(
             model='gemini-3.1-pro-previewcustomtools',
             contents=prompt
@@ -91,7 +99,7 @@ def scraper_node(state: ScholarState) -> ScholarState:
             "raw_html": html,
             "raw_markdown": markdown,
             "unvisited_urls": queue, 
-            "visited_urls": [current_url] # Appends to visited due to operator.add
+            "visited_urls": [current_url] 
         }
     except Exception as e:
         print(f"❌ Scraper failed on {current_url}: {e}")
@@ -118,6 +126,7 @@ def curator_node(state: ScholarState) -> ScholarState:
     """
     
     try:
+        client = get_gemini_client(state)
         response = client.models.generate_content(
             model='gemini-3.1-pro-previewcustomtools', 
             contents=prompt
@@ -128,18 +137,15 @@ def curator_node(state: ScholarState) -> ScholarState:
         
         meta = json.loads(raw_text)
         
-        # Save to Obsidian
-        vault_path = os.getenv("OBSIDIAN_VAULT_PATH", "C:/Users/matty/Vaults/MCM_REMOTE")
+        # Determine Vault Path (UI State > Environment Variable > Default)
+        vault_path = state.get("vault_path") or os.getenv("OBSIDIAN_VAULT_PATH", "./Obsidian_Inbox")
         category_path = meta.get('path', '05 - RESOURCES/Inbox')
         full_dir = os.path.join(vault_path, category_path)
         os.makedirs(full_dir, exist_ok=True)
         
-        parsed_url = urlparse(state['current_url'])
-        url_end = parsed_url.path.strip('/').split('/')[-1] or parsed_url.netloc
-        clean_title = re.sub(r'[\\/*?:"<>|]', "", url_end)
+        clean_title = re.sub(r'[\\/*?:"<>|]', "", state['current_url'].split('/')[-2] or "index")
         filepath = os.path.join(full_dir, f"{clean_title}.md")
-        
-        tags_str = "\n  - ".join(meta.get('tags', ['obsidian-scholar']))
+        tags_str = "\n  - ".join(meta.get('tags', ['scholar']))
         
         frontmatter = f"---\nsource: {state['current_url']}\nsummary: {meta.get('summary')}\ntags:\n  - {tags_str}\n---\n\n"
         
