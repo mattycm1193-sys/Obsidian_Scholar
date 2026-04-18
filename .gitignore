@@ -1,0 +1,10 @@
+/.vscode
+/.mypy_cache
+/HelloWorld
+.env*
+/tests\
+
+
+
+
+

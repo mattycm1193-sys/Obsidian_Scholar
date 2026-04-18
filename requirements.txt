@@ -1,0 +1,7 @@
+google-genai
+beautifulsoup4
+requests
+html2text
+python-dotenv
+playwright
+langgraph

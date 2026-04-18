@@ -1,0 +1,455 @@
+<!doctype html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>OBSIDIAN SCHOLAR | Control Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#d2bbff",
+              "primary-container": "#7c3aed",
+              "on-primary-container": "#ede0ff",
+              background: "#0A0A0A",
+              surface: "#131313",
+            },
+            fontFamily: {
+              headline: ["Newsreader"],
+              body: ["Inter"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      body {
+        background-color: #0a0a0a;
+        color: #e5e2e1;
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body
+    class="font-body selection:bg-primary-container selection:text-white flex min-h-screen"
+  >
+    <!-- SideNavBar -->
+    <aside
+      class="fixed left-0 top-0 h-screen w-64 bg-zinc-900 flex flex-col pt-8 pb-8 hidden lg:flex border-r border-zinc-800/50 z-40"
+    >
+      <div class="px-8 mb-12 mt-8">
+        <div class="text-violet-500 font-black text-xs tracking-[0.2em] mb-1">
+          INTELLECTUAL BRUTALISM
+        </div>
+        <div
+          class="text-zinc-600 font-sans text-[10px] tracking-[0.15em] uppercase font-bold"
+        >
+          V1.0.4-STABLE
+        </div>
+      </div>
+      <nav class="flex-1 space-y-1">
+        <a
+          class="flex items-center gap-4 px-8 py-4 text-violet-300 border-r-2 border-violet-600 bg-transparent transition-all"
+          href="#"
+          onclick="toggleView('dashboard')"
+        >
+          <span class="material-symbols-outlined">grid_view</span>
+          <span
+            class="font-sans text-[10px] tracking-[0.15em] uppercase font-bold"
+            >DASHBOARD</span
+          >
+        </a>
+        <a
+          class="flex items-center gap-4 px-8 py-4 text-zinc-600 hover:text-zinc-100 hover:bg-zinc-800 transition-all"
+          href="#"
+          onclick="toggleView('vault')"
+        >
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span
+            class="font-sans text-[10px] tracking-[0.15em] uppercase font-bold"
+            >VAULT</span
+          >
+        </a>
+        <a
+          class="flex items-center gap-4 px-8 py-4 text-zinc-600 hover:text-zinc-100 hover:bg-zinc-800 transition-all"
+          href="#"
+          onclick="toggleView('graph')"
+        >
+          <span class="material-symbols-outlined">hub</span>
+          <span
+            class="font-sans text-[10px] tracking-[0.15em] uppercase font-bold"
+            >GRAPH</span
+          >
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col lg:ml-64 relative min-h-screen">
+      <!-- TopAppBar -->
+      <header
+        class="bg-zinc-950/80 backdrop-blur-md flex justify-between items-center px-8 py-6 w-full sticky top-0 z-30 border-b border-zinc-800/50"
+      >
+        <div
+          class="font-serif font-bold text-zinc-100 tracking-tighter text-3xl"
+        >
+          OBSIDIAN SCHOLAR
+        </div>
+        <div
+          class="ml-4 px-3 py-1 bg-zinc-900 rounded text-[10px] font-bold tracking-widest text-zinc-400 border border-zinc-800"
+          id="status-badge"
+        >
+          AWAITING COMMAND
+        </div>
+      </header>
+
+      <main class="flex-1 p-8">
+        <div class="max-w-7xl mx-auto" id="dashboard-view">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Column: Configuration -->
+            <section class="lg:col-span-5 flex flex-col gap-6">
+              <div class="bg-zinc-900 rounded-xl p-8 border border-zinc-800">
+                <h3
+                  class="font-sans text-[10px] uppercase tracking-widest text-zinc-100 mb-6 font-bold flex items-center border-b border-zinc-800 pb-4"
+                >
+                  <span
+                    class="material-symbols-outlined mr-2 text-sm text-violet-400"
+                    >settings</span
+                  >
+                  Configuration Sequence
+                </h3>
+
+                <div class="space-y-6">
+                  <div class="flex flex-col gap-2">
+                    <label
+                      class="font-sans text-[10px] uppercase tracking-widest text-zinc-500 font-bold"
+                      >SEED URL</label
+                    >
+                    <input
+                      id="seed-url"
+                      class="w-full bg-[#0A0A0A] border border-zinc-800 rounded-lg py-3 px-4 text-zinc-100 font-mono text-sm focus:border-violet-500 outline-none"
+                      value="https://docs.solo.io/gloo-gateway/latest/"
+                    />
+                  </div>
+
+                  <div class="flex flex-col gap-2">
+                    <label
+                      class="font-sans text-[10px] uppercase tracking-widest text-zinc-500 font-bold"
+                      >RESEARCH GOALS</label
+                    >
+                    <textarea
+                      id="research-goal"
+                      class="w-full bg-[#0A0A0A] border border-zinc-800 rounded-lg py-3 px-4 text-zinc-100 font-body text-sm focus:border-violet-500 outline-none resize-none"
+                      rows="4"
+                    >
+Extract all documentation regarding Gloo Gateway, API infrastructure, and service mesh. Ignore pricing, login, or community forums.</textarea
+                    >
+                  </div>
+
+                  <div class="flex flex-col gap-2">
+                    <label
+                      class="font-sans text-[10px] uppercase tracking-widest text-zinc-500 font-bold"
+                      >MAX PAGES (<span id="slider-val">5</span>)</label
+                    >
+                    <input
+                      type="range"
+                      id="max-pages"
+                      min="1"
+                      max="50"
+                      value="5"
+                      class="w-full accent-violet-500"
+                      oninput="
+                        document.getElementById('slider-val').innerText =
+                          this.value
+                      "
+                    />
+                  </div>
+
+                  <button
+                    onclick="launchScholar()"
+                    class="w-full mt-4 py-4 bg-violet-600 rounded-lg font-sans text-xs uppercase tracking-widest font-bold text-white hover:bg-violet-500 transition-all flex justify-center items-center gap-3"
+                  >
+                    <span class="material-symbols-outlined">rocket_launch</span>
+                    LAUNCH SCHOLAR
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Right Column: Results & Terminal -->
+            <section class="lg:col-span-7 flex flex-col gap-6">
+              <!-- Vault Ingestion List -->
+              <div
+                class="bg-zinc-900 border border-zinc-800 rounded-xl flex flex-col h-[350px]"
+              >
+                <div
+                  class="p-4 border-b border-zinc-800 flex justify-between items-center"
+                >
+                  <h3
+                    class="font-sans text-[10px] uppercase tracking-widest text-zinc-100 font-bold flex items-center"
+                  >
+                    <span
+                      class="material-symbols-outlined mr-2 text-violet-400 text-sm"
+                      >folder_open</span
+                    >
+                    VAULT INGESTION
+                  </h3>
+                  <button
+                    onclick="loadVaultFiles()"
+                    class="text-xs text-zinc-500 hover:text-violet-400"
+                  >
+                    <span class="material-symbols-outlined text-sm"
+                      >refresh</span
+                    >
+                  </button>
+                </div>
+                <div
+                  id="vault-list"
+                  class="p-4 flex-1 overflow-y-auto space-y-2"
+                >
+                  <!-- Files will populate here -->
+                  <div
+                    class="text-zinc-600 text-xs font-mono text-center mt-10"
+                  >
+                    Awaiting Neural Sync...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Terminal Output -->
+              <div
+                class="bg-black border border-zinc-800 rounded-xl flex flex-col h-64 overflow-hidden"
+              >
+                <div
+                  class="bg-zinc-900 px-4 py-2 flex items-center gap-2 border-b border-zinc-800"
+                >
+                  <div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+                  <div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+                  <div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+                  <span
+                    class="ml-4 font-mono text-[10px] text-zinc-500 uppercase tracking-widest"
+                    >scholar-agent-core-v1</span
+                  >
+                </div>
+                <div
+                  id="terminal-logs"
+                  class="p-4 flex-1 overflow-y-auto font-mono text-xs leading-relaxed space-y-1 text-zinc-400"
+                >
+                  <p>
+                    <span class="text-violet-500 mr-2">›</span> System ready.
+                    Awaiting input...
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- Graph View Placeholder -->
+        <div class="max-w-7xl mx-auto hidden" id="graph-view">
+          <h2 class="font-headline text-3xl text-zinc-100 mb-6">
+            Neural Network Topology
+          </h2>
+          <div
+            class="w-full h-[600px] bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center"
+          >
+            <p class="font-mono text-zinc-500">
+              Graph Visualization Active. Connect D3.js or Force Graph here.
+            </p>
+          </div>
+        </div>
+
+        <!-- Full Vault View Placeholder -->
+        <div class="max-w-7xl mx-auto hidden" id="vault-view">
+          <h2 class="font-headline text-3xl text-zinc-100 mb-6">
+            Local Vault Explorer
+          </h2>
+          <div
+            class="w-full h-[600px] bg-zinc-900 border border-zinc-800 rounded-xl p-6 overflow-auto"
+            id="vault-explorer-content"
+          >
+            Click a file on the Dashboard to view its contents here.
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Vault View Modal (Overlay) -->
+    <div
+      id="file-modal"
+      class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 pointer-events-none"
+    >
+      <div
+        class="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto"
+        onclick="closeModal()"
+      ></div>
+      <div
+        class="relative w-full max-w-4xl max-h-[90vh] bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl flex flex-col pointer-events-auto overflow-hidden"
+      >
+        <div
+          class="flex items-center justify-between px-6 py-4 border-b border-zinc-900"
+        >
+          <h2 id="modal-title" class="font-headline text-xl text-zinc-100">
+            Document.md
+          </h2>
+          <button
+            onclick="closeModal()"
+            class="text-zinc-500 hover:text-zinc-100"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div
+          class="flex-1 overflow-y-auto p-8 font-serif text-lg leading-relaxed text-zinc-300"
+        >
+          <pre
+            id="modal-content"
+            class="font-mono text-xs text-zinc-400 whitespace-pre-wrap"
+          >
+Loading...</pre
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- API Integration Script -->
+    <script>
+      const API_BASE = "http://localhost:8000/api";
+
+      function log(message, type = "info") {
+        const terminal = document.getElementById("terminal-logs");
+        const color =
+          type === "error"
+            ? "text-red-400"
+            : type === "success"
+              ? "text-green-400"
+              : "text-violet-500";
+        terminal.innerHTML += `<p><span class="${color} mr-2">›</span> ${message}</p>`;
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+
+      function toggleView(viewId) {
+        document.getElementById("dashboard-view").classList.add("hidden");
+        document.getElementById("graph-view").classList.add("hidden");
+        document.getElementById("vault-view").classList.add("hidden");
+        document.getElementById(`${viewId}-view`).classList.remove("hidden");
+      }
+
+      async function launchScholar() {
+        const url = document.getElementById("seed-url").value;
+        const goal = document.getElementById("research-goal").value;
+        const maxPages = parseInt(document.getElementById("max-pages").value);
+
+        document.getElementById("status-badge").innerText = "ASSIMILATING...";
+        document
+          .getElementById("status-badge")
+          .classList.add(
+            "text-violet-400",
+            "border-violet-500/50",
+            "animate-pulse",
+          );
+        log(`Initializing sequence for target: ${url}`);
+
+        try {
+          const response = await fetch(`${API_BASE}/launch`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: url, goal: goal, max_pages: maxPages }),
+          });
+          const data = await response.json();
+
+          log(
+            `Sequence complete. Processed ${data.visited_urls ? data.visited_urls.length : 0} nodes.`,
+            "success",
+          );
+          loadVaultFiles(); // Refresh the list
+        } catch (error) {
+          log(`Connection to Scholar Core failed: ${error}`, "error");
+        } finally {
+          document.getElementById("status-badge").innerText = "SYSTEM IDLE";
+          document
+            .getElementById("status-badge")
+            .classList.remove(
+              "text-violet-400",
+              "border-violet-500/50",
+              "animate-pulse",
+            );
+        }
+      }
+
+      async function loadVaultFiles() {
+        try {
+          const response = await fetch(`${API_BASE}/vault`);
+          const data = await response.json();
+          const listEl = document.getElementById("vault-list");
+
+          if (!data.files || data.files.length === 0) {
+            listEl.innerHTML =
+              '<div class="text-zinc-600 text-xs font-mono text-center mt-10">Vault is empty.</div>';
+            return;
+          }
+
+          listEl.innerHTML = "";
+          data.files.forEach((file) => {
+            listEl.innerHTML += `
+                    <div onclick="openFile('${file.path}', '${file.filename}')" class="p-3 bg-zinc-950 border border-zinc-800 hover:border-violet-500 cursor-pointer transition-colors rounded group">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="text-[10px] font-bold text-violet-400">INDEXED</span>
+                        </div>
+                        <h3 class="text-sm font-semibold text-zinc-300 group-hover:text-white truncate">${file.filename}</h3>
+                    </div>
+                `;
+          });
+        } catch (e) {
+          console.error("Failed to load vault:", e);
+        }
+      }
+
+      async function openFile(path, filename) {
+        document.getElementById("file-modal").classList.remove("hidden");
+        document.getElementById("modal-title").innerText = filename;
+        document.getElementById("modal-content").innerText =
+          "Fetching node data...";
+
+        try {
+          const response = await fetch(
+            `${API_BASE}/vault/content?path=${encodeURIComponent(path)}`,
+          );
+          const data = await response.json();
+          document.getElementById("modal-content").innerText = data.content;
+        } catch (e) {
+          document.getElementById("modal-content").innerText =
+            "Error loading file content.";
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("file-modal").classList.add("hidden");
+      }
+
+      // Load files on startup
+      loadVaultFiles();
+    </script>
+  </body>
+</html>
