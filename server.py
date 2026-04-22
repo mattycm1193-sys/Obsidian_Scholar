@@ -1,12 +1,12 @@
-import os
-import json
-import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import os
+import uvicorn
 from dotenv import load_dotenv
-from langgraph.graph import StateGraph, END
 
+# Import LangGraph components
+from langgraph.graph import StateGraph, END
 from src.agent_state import ScholarState
 from src.nodes import planner_node, scraper_node, curator_node
 
@@ -33,6 +33,7 @@ class ScholarRequest(BaseModel):
 
 # LangGraph Routing Logic
 def route_next_step(state: ScholarState):
+    """If we have unvisited URLs in the queue, keep scraping. Otherwise, End."""
     unvisited = state.get("unvisited_urls", [])
     visited = state.get("visited_urls", [])
     limit = state.get("max_pages", 5)
@@ -63,6 +64,10 @@ async def launch_scholar(request: ScholarRequest):
     
     # Ensure Playwright is ready
     os.system("python -m playwright install chromium")
+    
+    agent_app = build_agent()
+    
+    # Build the initial state dictionary from the UI payload
     initial_state = {
         "research_goal": request.research_goal,
         "current_url": "",

@@ -16,4 +16,3 @@ class ScholarState(TypedDict):
     raw_markdown: str           # The scraped content from the current URL
     raw_html: str               # The raw DOM before parsing
     error: str                  # Any errors that occur during fetching
-    max_pages: int              # UI-controlled limit
